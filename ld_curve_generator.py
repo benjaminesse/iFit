@@ -41,12 +41,6 @@ mode = 0
 prm_dir = ('F:/Black_Hole/Data/201801_Masaya/Ryu_spectra/'+
           '20180115_DOAS_for_camera_all/Ben_format_shifted/')
 
-#prm_dir = ('F:/Black_Hole/Data/201801_Masaya/Ryu_spectra/'+
-#           '20180114/Ben_format_shifted/')
-
-#prm_dir = ('F:/Black_Hole/Data/2012_0318_EtnaLavaFountain/Model_Input/'+
-#           'EMIL/Zenith_7.45/')
-
 # Set spectrometer name and directory
 spec_name = 'FLMS02101_2'
 spec_dir  = prm_dir + ('spectra/spectrum_')
