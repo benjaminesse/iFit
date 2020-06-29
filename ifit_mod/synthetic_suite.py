@@ -13,8 +13,15 @@ from ifit.make_ils import make_ils
 from ifit.spectral_analysis import Analyser
 
 class Analyser_ld(Analyser):
-    def __init__(self,common):
-        Analyser.__init__(self,common)
+    def __init__(self, params, fit_window, frs_path, model_padding=1.0, 
+                 model_spacing=0.01, flat_flag=False, flat_path=None,
+                 stray_flag=False, stray_window=[280, 290], dark_flag=False,
+                 ils_type='Manual', ils_path=None):
+        
+        Analyser.__init__(self, params, fit_window, frs_path, model_padding=1.0, 
+                          model_spacing=0.01, flat_flag=False, flat_path=None,
+                          stray_flag=False, stray_window=[280, 290], dark_flag=False,
+                          ils_type='Manual', ils_path=None)
         
     def fwd_model(self, x, *p0):
 
@@ -80,19 +87,19 @@ class Analyser_ld(Analyser):
         ldf_coefs     = [p[n] for n in p if 'LDF'     in n]
 
         # Construct background polynomial
-        bg_poly = np.polyval(bg_poly_coefs, self.common['model_grid'])
-        frs = np.multiply(self.common['frs'], bg_poly)
+        bg_poly = np.polyval(bg_poly_coefs, self.model_grid)
+        frs = np.multiply(self.frs, bg_poly)
 
         # Create empty array to hold optical depth spectra
-        gas_T = np.zeros((len(self.common['xsecs']),
-                          len(self.common['model_grid'])))
+        gas_T = np.zeros((len(self.xsecs),
+                          len(self.model_grid)))
 
         # Calculate the gas optical depth spectra
-        for n, gas in enumerate(self.common['xsecs']):
+        for n, gas in enumerate(self.xsecs):
             if gas == 'SO2':
-                so2_T  = (np.multiply(self.common['xsecs'][gas], p[gas]))
+                so2_T  = (np.multiply(self.xsecs[gas], p[gas]))
             else:
-                gas_T[n] = (np.multiply(self.common['xsecs'][gas], p[gas]))
+                gas_T[n] = (np.multiply(self.xsecs[gas], p[gas]))
                 
         # Calculate gas optical depth spectra
         plm_T = np.vstack((so2_T,gas_T))
@@ -111,7 +118,7 @@ class Analyser_ld(Analyser):
         
         #Add wavelength dependancy to light dilution factor
         ldf_const = - np.log(1-ldf_coefs[0])*(310**4)
-        rayleigh  = self.common['model_grid']**-4
+        rayleigh  = self.model_grid**-4
         ldf = 1-np.exp(-ldf_const*rayleigh)
         
         # Calc light dilution effect
@@ -121,32 +128,32 @@ class Analyser_ld(Analyser):
         plm_F = np.multiply(plm_F, 1-ldf)
             
         # Build the baseline polynomial
-        offset = np.polyval(offset_coefs, self.common['model_grid'])
+        offset = np.polyval(offset_coefs, self.model_grid)
         
         # Add diluted and undilted light
         raw_F = np.add(dil_F, plm_F) + offset
         
         # Generate the ILS
-        if self.common['generate_ils']:
+        if self.generate_ils:
 
             # Unpack ILS params
-            ils = make_ils(self.common['model_spacing'],
+            ils = make_ils(self.model_spacing,
                            p['fwem'],
                            p['k'],
                            p['a_w'],
                            p['a_k'])
         else:
-            ils = self.common['ils']
+            ils = self.ils
 
         # Apply the ILS convolution
         F_conv = np.convolve(raw_F, ils, 'same')
 
         # Apply shift and stretch to the model_grid
-        wl_shift = np.polyval(shift_coefs, self.common['model_grid'])
-        shift_model_grid = np.add(self.common['model_grid'], wl_shift)
+        wl_shift = np.polyval(shift_coefs, self.model_grid)
+        shift_model_grid = np.add(self.model_grid, wl_shift)
 
         # Interpolate onto measurement wavelength grid
         fit = griddata(shift_model_grid, F_conv, x,
-                       method=self.common['interp_method'])
+                       method=self.interp_method)
 
         return fit
