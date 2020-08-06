@@ -18,10 +18,12 @@ class Analyser_ld(Analyser):
                  stray_flag=False, stray_window=[280, 290], dark_flag=False,
                  ils_type='Manual', ils_path=None):
         
-        Analyser.__init__(self, params, fit_window, frs_path, model_padding=1.0, 
-                          model_spacing=0.01, flat_flag=False, flat_path=None,
-                          stray_flag=False, stray_window=[280, 290], dark_flag=False,
-                          ils_type='Manual', ils_path=None)
+        Analyser.__init__(self, params, fit_window, frs_path, 
+                          model_padding=model_padding, model_spacing=model_spacing, 
+                          flat_flag=flat_flag, flat_path=flat_path,
+                          stray_flag=stray_flag, stray_window=stray_window, 
+                          dark_flag=dark_flag,
+                          ils_type=ils_type, ils_path=ils_path)
         
     def fwd_model(self, x, *p0):
 
