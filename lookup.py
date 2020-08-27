@@ -214,18 +214,15 @@ def load_points(fpath):
     '''
     Load in uncorrected SO2 SCDs from a normal ifit analysis
     '''
-    # Check file type to determine if in spec format or scan format
-    if file_type == 'spec':
-        
-        # Select file name for points for both wavelength
-        points_0_fname = fpath + ('ifit_out_306_316.csv')
-        points_1_fname = fpath + ('ifit_out_312_322.csv')
-        
-        # Load SO2 at first wavelenth
-        df0 = pd.read_csv(points_0_fname)
-        
-        # Load SO2 at second wavelength
-        df1 = pd.read_csv(points_1_fname)
+    # Select file name for points for both wavelength
+    points_0_fname = fpath + ('ifit_out_306_316.csv')
+    points_1_fname = fpath + ('ifit_out_312_322.csv')
+
+    # Load SO2 at first wavelenth
+    df0 = pd.read_csv(points_0_fname)
+
+    # Load SO2 at second wavelength
+    df1 = pd.read_csv(points_1_fname)
                         
     # Extract SO2 and SO2 error info
     points_0 = np.array(df0['SO2'])
